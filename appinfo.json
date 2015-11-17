@@ -1,0 +1,30 @@
+{
+    "appKeys": {
+        "ID": 5,
+        "KEY_AVATAR": 4,
+        "KEY_COUNTRY": 3,
+        "KEY_CURRENTNAME": 0,
+        "KEY_REALNAME": 1,
+        "KEY_STATE": 2
+    },
+    "capabilities": [
+        "configurable"
+    ],
+    "companyName": "Planeboy Games",
+    "longName": "SteamPebble",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "SteamPeb",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "56e766c2-5f49-4aa4-9ba3-949d0ccf2b14",
+    "versionLabel": "0.4",
+    "watchapp": {
+        "watchface": false
+    }
+}
