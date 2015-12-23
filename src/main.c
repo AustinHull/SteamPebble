@@ -1,4 +1,4 @@
-/* *** COPYRIGHT (C)2014-2015 Planeboy Games(Austin Hull). NetDownload and PNG-related portions of code provided with permission from: https://github.com/pebble-examples/pebble-faces. SteamPebble AND Planeboy Games ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
+/* *** COPYRIGHT (C)2014-2016 Planeboy Games(Austin Hull). SteamPebble AND Planeboy Games ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
 THIS FREE SOFTWARE IS OPEN-SOURCE AND IS LICENSED UNDER THE GNU General Public License v2.
 TERMS AND CONDITIONS OF THE GNU General Public License v2 MAY BE OBTAINED AT: https://gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1 
 FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github.com/austinplaneboy/SteamPebble *** */
@@ -12,8 +12,8 @@ FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github
 #define KEY_REALNAME 1
 #define KEY_STATE 2
 #define KEY_COUNTRY 3
-#define KEY_AVATAR 4
-#define ID 5
+#define ID 4
+#define KEY_AVATAR 5
   
 // Char buffers, used to contain parsed-through JSON variables, to be passed to the viewer.
 static char cName[33];
@@ -22,28 +22,146 @@ static char state[3];
 static char country[3];
 static char id[19];
 
-static GBitmap *avatarVar;
+//static GBitmap *avatarVar;
+
+//int currentSelectionCase = NULL;
 
 // Used for the initial splash-screen.
 static Window *window;
 static TextLayer *textLayer;
 static TextLayer *textLayer2;
 
-// Window variables for the first menu screen.
+// Window objects for the first menu screen.
 static Window *mainMenuWindow;
-Layer *mainMenuWinLayer;
+//Layer *mainMenuWinLayer;
 MenuLayer *menuLayerMain;
 
-// Window variables for secondary menu screens.
+// Window objects for secondary menu screens.
 static Window *secondaryWindow;
-Layer *secondaryLayer;
+//Layer *secondaryLayer;
 MenuLayer *secondaryMenuLayer;
+
+static Window *secondaryWindow2;
+//Layer *secondaryLayer2;
 MenuLayer *secondaryMenuLayer2;
-MenuLayer *secondaryMenuLayer3;
+
+static Window *secondaryWindow3;
+static TextLayer *secondTextLayer;
+
+// .load function for splash screen WindowHandler. WORK IN PROGRESS!!!
+static void firstWindowLoad(Window *window)
+{
+    // Layer for primary window.
+    Layer *window_Layer = window_get_root_layer(window);
+    window_set_background_color(window, GColorBlack);
+    
+    // Experimental alternative method for initializing splash screen text.
+    GRect bounds = layer_get_frame(window_Layer);
+    GRect rect;
+    rect.origin = (GPoint){0,10};
+    rect.size.w = bounds.size.w;
+    rect.size.h = (.5 * bounds.size.h);
+    textLayer = text_layer_create(rect);
+    rect.origin = (GPoint){0, rect.size.h};
+    textLayer2 = text_layer_create(rect);
+  
+    layer_add_child(window_Layer, text_layer_get_layer(textLayer));
+    layer_add_child(window_Layer, text_layer_get_layer(textLayer2));
+  
+    text_layer_set_text(textLayer, "SteamPebble  LOADING...");
+    text_layer_set_font(textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+    text_layer_set_background_color(textLayer, GColorBlack);
+    text_layer_set_text_color(textLayer, GColorWhite);
+    text_layer_set_text_alignment(textLayer, GTextAlignmentCenter);
+  
+    text_layer_set_font(textLayer2, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+    text_layer_set_background_color(textLayer2, GColorBlack);
+    text_layer_set_text_color(textLayer2, GColorWhite);
+    text_layer_set_text_alignment(textLayer2, GTextAlignmentCenter);
+  
+    text_layer_set_text(textLayer2, "CHECKING DEVICE CONNECTION...");
+}
+// .unload function for splash screen WindowHandler. WORK IN PROGRESS!!!
+static void firstWindowUnload(Window *window)
+{
+  // Experimental method for deinitializing and destroying splash screen's child resources upon exit.
+    text_layer_destroy(textLayer);
+    text_layer_destroy(textLayer2);
+    textLayer = NULL;
+    textLayer2 = NULL;
+}
+// .load function for Main Menu WindowHandler. WORK IN PROGRESS!!!
+static void mainMenuLoad(Window *window)
+{
+    //Layer *mainMenuWinLayer = window_get_root_layer(window);
+    window_set_background_color(window, GColorWhite);
+
+    //menu_layer_set_click_config_onto_window(menuLayerMain, window);
+    //layer_add_child(window_get_root_layer(window), menu_layer_get_layer(menuLayerMain));
+}
+// .unload function for Main Menu WindowHandler. WORK IN PROGRESS!!!
+static void mainMenuUnload(Window *window)
+{
+    menu_layer_destroy(menuLayerMain);
+    menuLayerMain = NULL;
+}
+
+// .load function for Profile Page WindowHandler. WORK IN PROGRESS!!!
+static void secondaryWindowLoad(Window *window)
+{
+    window_set_background_color(window, GColorWhite);
+  
+    menu_layer_set_click_config_onto_window(secondaryMenuLayer, window);
+    layer_add_child(window_get_root_layer(window), menu_layer_get_layer(secondaryMenuLayer));
+}
+// .unload function for Profile Page WindowHandler. WORK IN PROGRESS!!!
+static void secondaryWindowUnload(Window *window)
+{
+    //menu_layer_destroy(secondaryMenuLayer);
+    //secondaryMenuLayer = NULL;
+}
+
+// .load function for User Guide WindowHandler. WORK IN PROGRESS!!!
+static void secondaryWindow2Load(Window *window)
+{
+    window_set_background_color(window, GColorWhite);
+  
+    //menu_layer_set_click_config_onto_window(secondaryMenuLayer2, window);
+    //layer_add_child(window_get_root_layer(window), menu_layer_get_layer(secondaryMenuLayer2));
+}
+// .unload function for User Guide WindowHandler. WORK IN PROGRESS!!!
+static void secondaryWindow2Unload(Window *window)
+{
+    //menu_layer_destroy(secondaryMenuLayer2);
+    //secondaryMenuLayer2 = NULL;
+}
+
+// .load function for About Page WindowHandler. WORK IN PROGRESS!!!
+static void secondaryWindow3Load(Window *window)
+{
+    Layer *secondaryLayer3 = window_get_root_layer(window);
+    GRect bounds = layer_get_frame(secondaryLayer3);
+    GRect rect;
+    rect.origin = (GPoint){0,0};
+    rect.size.w = bounds.size.w;
+    rect.size.h = (bounds.size.h);
+    secondTextLayer = text_layer_create(rect);
+    layer_add_child(secondaryLayer3, text_layer_get_layer(secondTextLayer));
+  
+    text_layer_set_text(secondTextLayer, "About text here!"); // TODO: Finish setting up this About Page text!
+    text_layer_set_font(secondTextLayer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+    text_layer_set_background_color(secondTextLayer, GColorBlack);
+    text_layer_set_text_color(secondTextLayer, GColorWhite);
+}
+// .unload function for About Page WindowHandler. WORK IN PROGRESS!!!
+static void secondaryWindow3Unload(Window *window)
+{
+
+}
 
 void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-  //Window *window = (Window *)context;
+  //Window *window = (Window *)context; This statement section is currently useless.
 }
 
 // Provides data and things for button click events.
@@ -52,6 +170,7 @@ void config_provider(Window *window)
   window_single_click_subscribe(BUTTON_ID_SELECT, down_single_click_handler);
 }
 
+// Callbacks for first(Main Menu) window.
 uint16_t num_rows_callback(MenuLayer *menuLayer, uint16_t sectionIndex, void *callbackContext)
 {
   return 3;
@@ -73,6 +192,7 @@ void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, 
   }
 }
 
+// Callbacks for a secondary(Profile) window.
 uint16_t num_rows_callback2(MenuLayer *menuLayer, uint16_t sectionIndex, void *callbackContext)
 {
   return 4;
@@ -97,22 +217,46 @@ void draw_row_callback2(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index,
   }
 }
 
-//Used to transition selection from main menu to secondary menu.
+// Callbacks for a secondary(User Guide) window.
+uint16_t num_rows_callback2_1(MenuLayer *menuLayer, uint16_t sectionIndex, void *callbackContext)
+{
+  return 2;
+}
+
+void draw_row_callback2_1(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *callback_context)
+{
+  switch(cell_index->row)
+  {
+    case 0:
+    menu_cell_basic_draw(ctx, cell_layer, "Profile Setup", NULL, NULL);
+    break;
+    case 1:
+    menu_cell_basic_draw(ctx, cell_layer, "Accessing Info", NULL, NULL);
+    break;
+  }
+}
+
+//Used to transition selections from main menu to secondary menu.
 static void select_click_callback(MenuLayer *menuLayer, MenuIndex *cell_Index, void *callbackContext)
 {
   switch(cell_Index->row)
   {
+    // Each case's output corresponds to a single menu selection, depending on which menu row is selected at the time of button-press.
     case 0:
+    // Case 0 is used to display profile data on the secondaryWindow.
     window_stack_push(secondaryWindow, true);
     
-    menu_layer_set_click_config_onto_window(secondaryMenuLayer, secondaryWindow);
-    layer_add_child(window_get_root_layer(secondaryWindow), menu_layer_get_layer(secondaryMenuLayer));
+    //menu_layer_set_click_config_onto_window(secondaryMenuLayer, secondaryWindow);
+    //layer_add_child(window_get_root_layer(secondaryWindow), menu_layer_get_layer(secondaryMenuLayer));
     break;
     case 1:
-    window_stack_push(secondaryWindow, true);
+    window_stack_push(secondaryWindow2, true);
+    
+    menu_layer_set_click_config_onto_window(secondaryMenuLayer2, secondaryWindow2);
+    layer_add_child(window_get_root_layer(secondaryWindow2), menu_layer_get_layer(secondaryMenuLayer2));
     break;
     case 2:
-    window_stack_push(secondaryWindow, true);    
+    window_stack_push(secondaryWindow3, true);    
     break;
   }
 }
@@ -120,13 +264,15 @@ static void select_click_callback(MenuLayer *menuLayer, MenuIndex *cell_Index, v
 // Set up some initialization-related variables and objects.
 bool dataSuccess = false;
 
-static void initText(Layer *window_Layer);
+// ...In particular, declare custom functions prior to use.
+static void initBT(void);
 static void init(void);
 static void deinit(void);
 void bluetooth_Connection_Callback(bool connected);
 //BluetoothConnectionHandler bluetoothConnect;
 static void tick_handler(struct tm *tick_time, TimeUnits unitsChanged);
 
+// Use of unsigned short integer variable should be the most space-effective implementation for a micro-scale timer.
 unsigned short int timer = 0;
 
 // Receives messages from apiCode.js, takes JSON data and applies it to C variables.
@@ -162,7 +308,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
   
-  // Loads new window, only if data is received from Steam.
+  // Loads next windows, only if data is received from Steam.
   if(country != NULL)
   {
     dataSuccess = true;
@@ -172,38 +318,63 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     
     //Creates and pushes new window for main menu to stack, and removes splash-screen from stack for performance management.
     mainMenuWindow = window_create();
-    mainMenuWinLayer = window_get_root_layer(mainMenuWindow);
-    //window_set_fullscreen(mainMenuWindow, true);
-    window_set_background_color(mainMenuWindow, GColorWhite);
+    
+    window_set_window_handlers(mainMenuWindow, (WindowHandlers)
+    {
+        .load = mainMenuLoad,
+        .unload = mainMenuUnload
+    });
     window_stack_push(mainMenuWindow, true);
-    window_stack_remove(window, false);
-    
-    //Secondary window parameters. Does not get pushed to screen until transition. Also, creates and attaches secondary menu layer to secondary window. //IN PROGRESS!!!//
-    secondaryWindow = window_create();
-    secondaryLayer = window_get_root_layer(mainMenuWindow);
-    //window_set_fullscreen(secondaryWindow, true);
-    window_set_background_color(secondaryWindow, GColorWhite);
-    
-    secondaryMenuLayer2 = menu_layer_create(GRect(0, 0, 144, 168));
-    //MenuLayerCallbacks callbacks2_1 = {.draw_row = , .get_num_rows = , NULL};
-    
-    secondaryMenuLayer = menu_layer_create(GRect(0, 0, 144, 168));
-    MenuLayerCallbacks callbacks2 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2, NULL};
-    menu_layer_set_callbacks(secondaryMenuLayer, NULL, callbacks2);
-    //menu_layer_set_click_config_onto_window(secondaryMenuLayer, secondaryWindow);
-    
-    //layer_add_child(window_get_root_layer(secondaryWindow), menu_layer_get_layer(secondaryMenuLayer));
-    
     //Sets configurations for button click provider.
     window_set_click_config_provider(mainMenuWindow, (ClickConfigProvider)config_provider);
-    
     //Creates and initializes main menu to be attached to new main menu window.
     menuLayerMain = menu_layer_create(GRect(0, 0, 144, 168));
     MenuLayerCallbacks callbacks = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback, .select_click = (MenuLayerSelectCallback)select_click_callback};
     menu_layer_set_callbacks(menuLayerMain, NULL, callbacks);
     menu_layer_set_click_config_onto_window(menuLayerMain, mainMenuWindow);
-    
     layer_add_child(window_get_root_layer(mainMenuWindow), menu_layer_get_layer(menuLayerMain));
+    
+    window_stack_remove(window, false);
+    
+    //Secondary windows and their parameters. These do not get pushed to screen until transition. Also, creates and attaches secondary menu layer to secondary window. //IN PROGRESS!!!//
+    secondaryWindow = window_create();
+    
+    window_set_window_handlers(secondaryWindow, (WindowHandlers)
+    {
+        .load = secondaryWindowLoad,
+        .unload = secondaryWindowUnload
+    });
+    //secondaryLayer = window_get_root_layer(secondaryWindow);
+    //window_set_fullscreen(secondaryWindow, true);
+    //window_set_background_color(secondaryWindow, GColorWhite);
+    secondaryMenuLayer = menu_layer_create(GRect(0, 0, 144, 168));
+    MenuLayerCallbacks callbacks2 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2, NULL};
+    menu_layer_set_callbacks(secondaryMenuLayer, NULL, callbacks2);
+    
+    secondaryWindow2 = window_create();
+    
+    window_set_window_handlers(secondaryWindow2, (WindowHandlers)
+    {
+         .load = secondaryWindow2Load,
+         .unload = secondaryWindow2Unload
+    });
+    
+    //secondaryLayer2 = window_get_root_layer(secondaryWindow2);
+    secondaryMenuLayer2 = menu_layer_create(GRect(0, 0, 144, 168));
+    MenuLayerCallbacks callbacks2_1 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2_1, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2_1, NULL};
+    menu_layer_set_callbacks(secondaryMenuLayer2, NULL, callbacks2_1);
+    
+    secondaryWindow3 = window_create();
+    
+    window_set_window_handlers(secondaryWindow3, (WindowHandlers)
+    {
+         .load = secondaryWindow3Load,
+         .unload = secondaryWindow3Unload
+    });
+    
+    //secondaryLayer3 = window_get_root_layer(secondaryWindow3);
+    //MenuLayerCallbacks callbacks2_2 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2_2, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2_2, NULL};
+    //menu_layer_set_callbacks(secondaryMenuLayer3, NULL, callbacks2_2);
   }
   else
   {
@@ -220,20 +391,26 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context)
   
 }
 
-// Layer of primary window.
-Layer *winLayer;
+// Layer for primary window.
+//Layer *winLayer;
+
 // First initialization point - Primary window and AppMessage-related registrations will be set up here.
 static void init()
 {
   window = window_create();
   
-  //window_set_fullscreen(window, true);
-  window_set_background_color(window, GColorBlack);
-  window_stack_push(window, true);
-  Layer *window_Layer = window_get_root_layer(window);
+  window_set_window_handlers(window, (WindowHandlers)
+  {
+         .load = firstWindowLoad,
+         .unload = firstWindowUnload
+  });
   
-  winLayer = window_Layer;
-  initText(window_Layer);
+  //window_set_background_color(window, GColorBlack);
+  window_stack_push(window, true);
+  //Layer *window_Layer = window_get_root_layer(window);
+  
+  //winLayer = window_Layer;
+  initBT(); // I may or may not be planning on depreciating this specific function...
 
   app_message_register_inbox_received(inbox_received_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
@@ -244,33 +421,9 @@ static void init()
 bool currentState = false;
 bool firstAPICall = false;
 
-// Now that the window has been set up, use window data to set up the two TextLayer strings that will be displayed on the "splash screen" of the app, dependant on conditions.
-static void initText(Layer *window_Layer)
+// Now that the first window has been set up, use window data to set up the two TextLayer strings that will be displayed on the "splash screen" of the app, dependant on conditions.
+static void initBT()
 {
-  GRect bounds = layer_get_frame(window_Layer);
-  GRect rect;
-  rect.origin = (GPoint){0,10};
-  rect.size.w = bounds.size.w;
-  rect.size.h = (.5 * bounds.size.h);
-  textLayer = text_layer_create(rect);
-  rect.origin = (GPoint){0, rect.size.h};
-  textLayer2 = text_layer_create(rect);
-  
-  layer_add_child(window_Layer, text_layer_get_layer(textLayer));
-  layer_add_child(window_Layer, text_layer_get_layer(textLayer2));
-  
-  text_layer_set_text(textLayer, "SteamPebble  LOADING...");
-  text_layer_set_font(textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_background_color(textLayer, GColorBlack);
-  text_layer_set_text_color(textLayer, GColorWhite);
-  text_layer_set_text_alignment(textLayer, GTextAlignmentCenter);
-  
-  text_layer_set_font(textLayer2, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_background_color(textLayer2, GColorBlack);
-  text_layer_set_text_color(textLayer2, GColorWhite);
-  text_layer_set_text_alignment(textLayer2, GTextAlignmentCenter);
-  
-  text_layer_set_text(textLayer2, "CHECKING DEVICE CONNECTION...");
   
   // Subscribe to the "seconds" member of the Pebble's time handler. Allows us to programmatically update a timer every second.
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
@@ -349,19 +502,33 @@ static void tick_handler(struct tm *tick_time, TimeUnits unitsChanged)
   }
 }
   
-// Release of resources and exit point for the app.
+// Releases the resources and is the exit point for the app. FREE THE SPACE!!!
 void deinit()
 {
   bluetooth_connection_service_unsubscribe();
   tick_timer_service_unsubscribe();
-  text_layer_destroy(textLayer);
-  text_layer_destroy(textLayer2);
+  //text_layer_destroy(textLayer);
+  //text_layer_destroy(textLayer2);
+  text_layer_destroy(secondTextLayer);
   window_destroy(window);
   window_destroy(mainMenuWindow);
   window_destroy(secondaryWindow);
+  window_destroy(secondaryWindow2);
+  window_destroy(secondaryWindow3);
+  window = NULL;
+  mainMenuWindow = NULL;
+  secondaryWindow = NULL;
+  secondaryWindow2 = NULL;
+  secondaryWindow3 = NULL;
   
-  menu_layer_destroy(menuLayerMain);
+  //menu_layer_destroy(menuLayerMain);
   menu_layer_destroy(secondaryMenuLayer);
+  menu_layer_destroy(secondaryMenuLayer2);
+  //menuLayerMain = NULL;
+  secondaryMenuLayer = NULL;
+  secondaryMenuLayer2 = NULL;
+  
+  app_message_deregister_callbacks();
   
   //layer_destroy(secondaryLayer);
   //layer_destroy(mainMenuWinLayer);

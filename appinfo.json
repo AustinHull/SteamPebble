@@ -10,7 +10,7 @@
     "capabilities": [
         "configurable"
     ],
-    "companyName": "Planeboy Games",
+    "companyName": "Hull Softworks",
     "longName": "SteamPebble",
     "projectType": "native",
     "resources": {
@@ -23,7 +23,7 @@
         "basalt"
     ],
     "uuid": "56e766c2-5f49-4aa4-9ba3-949d0ccf2b14",
-    "versionLabel": "0.4",
+    "versionLabel": "0.45",
     "watchapp": {
         "watchface": false
     }
