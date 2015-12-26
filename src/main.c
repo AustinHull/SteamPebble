@@ -1,13 +1,13 @@
-/* *** COPYRIGHT (C)2014-2016 Planeboy Games(Austin Hull). SteamPebble AND Planeboy Games ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
+/* *** COPYRIGHT (C)2014-2016 Hull Softworks(Austin Hull). SteamPebble AND Hull Softworks ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
 THIS FREE SOFTWARE IS OPEN-SOURCE AND IS LICENSED UNDER THE GNU General Public License v2.
 TERMS AND CONDITIONS OF THE GNU General Public License v2 MAY BE OBTAINED AT: https://gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1 
-FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github.com/austinplaneboy/SteamPebble *** */
+FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github.com/AustinHull/SteamPebble *** */
 
 // Core system/font libraries
 #include<pebble.h>
 #include<pebble_fonts.h>
 
-// Used for data moving between JavaScript (apiCode.js) and C (main.c)
+// Used for moving data between JavaScript (apiCode.js) and C (main.c)
 #define KEY_CURRENTNAME 0
 #define KEY_REALNAME 1
 #define KEY_STATE 2
@@ -23,8 +23,6 @@ static char country[3];
 static char id[19];
 
 //static GBitmap *avatarVar;
-
-//int currentSelectionCase = NULL;
 
 // Used for the initial splash-screen.
 static Window *window;
@@ -47,6 +45,7 @@ MenuLayer *secondaryMenuLayer2;
 
 static Window *secondaryWindow3;
 static TextLayer *secondTextLayer;
+ScrollLayer *scrollLayer;
 
 // .load function for splash screen WindowHandler. WORK IN PROGRESS!!!
 static void firstWindowLoad(Window *window)
@@ -55,7 +54,7 @@ static void firstWindowLoad(Window *window)
     Layer *window_Layer = window_get_root_layer(window);
     window_set_background_color(window, GColorBlack);
     
-    // Experimental alternative method for initializing splash screen text.
+    // Initialize splash screen text. Sets the fonts and colors to be used for said text.
     GRect bounds = layer_get_frame(window_Layer);
     GRect rect;
     rect.origin = (GPoint){0,10};
@@ -67,7 +66,7 @@ static void firstWindowLoad(Window *window)
   
     layer_add_child(window_Layer, text_layer_get_layer(textLayer));
     layer_add_child(window_Layer, text_layer_get_layer(textLayer2));
-  
+    
     text_layer_set_text(textLayer, "SteamPebble  LOADING...");
     text_layer_set_font(textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
     text_layer_set_background_color(textLayer, GColorBlack);
@@ -144,19 +143,26 @@ static void secondaryWindow3Load(Window *window)
     GRect rect;
     rect.origin = (GPoint){0,0};
     rect.size.w = bounds.size.w;
-    rect.size.h = (bounds.size.h);
+    rect.size.h = bounds.size.h;
     secondTextLayer = text_layer_create(rect);
-    layer_add_child(secondaryLayer3, text_layer_get_layer(secondTextLayer));
+    scrollLayer = scroll_layer_create(bounds);// Work In Progress!
   
-    text_layer_set_text(secondTextLayer, "About text here!"); // TODO: Finish setting up this About Page text!
+    text_layer_set_text(secondTextLayer, "Copyright(C)2014-2016 Hull Softworks(Austin Hull). This software is open-source and not-for-profit. Hull Softworks(Austin Hull) is not affiliated with Steam or Valve Software in any way. This software is currently under development, and may contain bugs and/or incomplete features. By downloading this software, you understand that Hull Softworks(Austin Hull) is not liable for any issues that you or your Pebble hardware may experience by using this software."); // TODO: Finish setting up this About Page text!
     text_layer_set_font(secondTextLayer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+    text_layer_set_size(secondTextLayer, GSize(rect.size.w, 2000));
+    GSize sTextLayerSize = text_layer_get_content_size(secondTextLayer);// Work In Progress!
+    scroll_layer_set_content_size(scrollLayer, GSize(rect.size.w, sTextLayerSize.h));// Work In Progress! GET SCROLLING TO WORK!
+    scroll_layer_add_child(scrollLayer, text_layer_get_layer(secondTextLayer));// Work In Progress!
+    layer_add_child(window_get_root_layer(window), scroll_layer_get_layer(scrollLayer));// Work In Progress!
     text_layer_set_background_color(secondTextLayer, GColorBlack);
     text_layer_set_text_color(secondTextLayer, GColorWhite);
+    scroll_layer_set_click_config_onto_window(scrollLayer, window);// Work In Progress!
 }
 // .unload function for About Page WindowHandler. WORK IN PROGRESS!!!
 static void secondaryWindow3Unload(Window *window)
 {
-
+    scroll_layer_destroy(scrollLayer);
+    text_layer_destroy(secondTextLayer);
 }
 
 void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
@@ -345,7 +351,6 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         .unload = secondaryWindowUnload
     });
     //secondaryLayer = window_get_root_layer(secondaryWindow);
-    //window_set_fullscreen(secondaryWindow, true);
     //window_set_background_color(secondaryWindow, GColorWhite);
     secondaryMenuLayer = menu_layer_create(GRect(0, 0, 144, 168));
     MenuLayerCallbacks callbacks2 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2, NULL};
@@ -509,7 +514,7 @@ void deinit()
   tick_timer_service_unsubscribe();
   //text_layer_destroy(textLayer);
   //text_layer_destroy(textLayer2);
-  text_layer_destroy(secondTextLayer);
+  //text_layer_destroy(secondTextLayer);
   window_destroy(window);
   window_destroy(mainMenuWindow);
   window_destroy(secondaryWindow);
@@ -529,10 +534,6 @@ void deinit()
   secondaryMenuLayer2 = NULL;
   
   app_message_deregister_callbacks();
-  
-  //layer_destroy(secondaryLayer);
-  //layer_destroy(mainMenuWinLayer);
-  //layer_destroy(winLayer);
 }
 
 // Entry point of the program.

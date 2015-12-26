@@ -1,7 +1,7 @@
-/* *** COPYRIGHT (C)2014-2016 Hull Softworks(Austin Hull). SteamPebble AND Planeboy Games ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
+/* *** COPYRIGHT (C)2014-2016 Hull Softworks(Austin Hull). SteamPebble AND Hull Softworks ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
 THIS FREE SOFTWARE IS OPEN-SOURCE AND IS LICENSED UNDER THE GNU General Public License v2.
 TERMS AND CONDITIONS OF THE GNU General Public License v2 MAY BE OBTAINED AT: https://gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1 
-FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github.com/austinplaneboy/SteamPebble *** */
+FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github.com/AustinHull/SteamPebble *** */
 
 var combString;
 var xhrRequest = function(url, type, callback)
