@@ -1,4 +1,4 @@
-/* *** COPYRIGHT (C)2014-2016 Hull Softworks(Austin Hull). SteamPebble AND Hull Softworks ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
+/* *** COPYRIGHT (C)2014-2016 Hull Softworks(Austin Hull). Wrist Steam AND Hull Softworks ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
 THIS FREE SOFTWARE IS OPEN-SOURCE AND IS LICENSED UNDER THE GNU General Public License v2.
 TERMS AND CONDITIONS OF THE GNU General Public License v2 MAY BE OBTAINED AT: https://gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1 
 FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github.com/AustinHull/SteamPebble *** */
@@ -29,7 +29,7 @@ function getSteamInfo()
   //ID2.trim();
   
   combString = JSON.parse(ID2);
-  combString = combString.ID;
+  //combString = combString.ID;
   
   console.log("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002?key=A89AB1A31BB73310B4C13D3945B79954&steamids=".concat(combString));
   
@@ -39,12 +39,11 @@ function getSteamInfo()
   
 }
 
-Pebble.addEventListener('showConfiguration', function(e){Pebble.openURL('http://steam.planeboygames.com/');});
+Pebble.addEventListener('showConfiguration', function(e){Pebble.openURL('https://openid-project-for-steampebble-austinhull.c9users.io/');});
 
 Pebble.addEventListener('webviewclosed', function(e){console.log('Config returned: ' + e.response);});
 Pebble.addEventListener('webviewclosed', function(e){ID = JSON.parse(decodeURIComponent(e.response)); console.log('Config says: ', JSON.stringify(ID)); localStorage.setItem('ID',JSON.stringify(ID)); getSteamInfo();});
 
-//location.href = 'pebblejs://close#success';
 
 //Pebble.addEventListener('ready', function(e){getSteamInfo();});
 

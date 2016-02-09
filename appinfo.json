@@ -10,20 +10,21 @@
     "capabilities": [
         "configurable"
     ],
-    "companyName": "Hull Softworks",
-    "longName": "SteamPebble",
+    "companyName": "Hull Softworks (Austin Hull)",
+    "enableMultiJS": false,
+    "longName": "Wrist Steam",
     "projectType": "native",
     "resources": {
         "media": []
     },
     "sdkVersion": "3",
-    "shortName": "SteamPeb",
+    "shortName": "Wrist Steam",
     "targetPlatforms": [
         "aplite",
         "basalt"
     ],
     "uuid": "56e766c2-5f49-4aa4-9ba3-949d0ccf2b14",
-    "versionLabel": "0.45",
+    "versionLabel": "0.50",
     "watchapp": {
         "watchface": false
     }

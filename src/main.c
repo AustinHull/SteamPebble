@@ -1,4 +1,4 @@
-/* *** COPYRIGHT (C)2014-2016 Hull Softworks(Austin Hull). SteamPebble AND Hull Softworks ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
+/* *** COPYRIGHT (C)2014-2016 Hull Softworks(Austin Hull). Wrist Steam AND Hull Softworks ARE NOT AFFILIATED WITH Steam OR Valve Software IN ANY WAY OR CAPACITY.
 THIS FREE SOFTWARE IS OPEN-SOURCE AND IS LICENSED UNDER THE GNU General Public License v2.
 TERMS AND CONDITIONS OF THE GNU General Public License v2 MAY BE OBTAINED AT: https://gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1 
 FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github.com/AustinHull/SteamPebble *** */
@@ -67,7 +67,7 @@ static void firstWindowLoad(Window *window)
     layer_add_child(window_Layer, text_layer_get_layer(textLayer));
     layer_add_child(window_Layer, text_layer_get_layer(textLayer2));
     
-    text_layer_set_text(textLayer, "SteamPebble  LOADING...");
+    text_layer_set_text(textLayer, "Wrist Steam  LOADING...");
     text_layer_set_font(textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
     text_layer_set_background_color(textLayer, GColorBlack);
     text_layer_set_text_color(textLayer, GColorWhite);
