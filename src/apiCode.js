@@ -39,7 +39,7 @@ function getSteamInfo()
   
 }
 
-Pebble.addEventListener('showConfiguration', function(e){Pebble.openURL('https://openid-project-for-steampebble-austinhull.c9users.io/');});
+Pebble.addEventListener('showConfiguration', function(e){Pebble.openURL('http://steam.planeboygames.com:26648/');});
 
 Pebble.addEventListener('webviewclosed', function(e){console.log('Config returned: ' + e.response);});
 Pebble.addEventListener('webviewclosed', function(e){ID = JSON.parse(decodeURIComponent(e.response)); console.log('Config says: ', JSON.stringify(ID)); localStorage.setItem('ID',JSON.stringify(ID)); getSteamInfo();});
