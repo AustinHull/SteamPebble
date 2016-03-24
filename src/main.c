@@ -6,6 +6,7 @@ FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github
 // Core system/font libraries
 #include<pebble.h>
 #include<pebble_fonts.h>
+#include "functionDeclarations.h"
 
 // Used for moving data between JavaScript (apiCode.js) and C (main.c)
 #define KEY_CURRENTNAME 0
@@ -21,6 +22,12 @@ static char rName[33];
 static char state[3];
 static char country[3];
 static char id[19];
+
+// Use of unsigned short integer variable should be the most space-effective implementation for a micro-scale timer.
+unsigned short int timer = 0;
+
+bool currentState = false;
+bool firstAPICall = false;
 
 //static GBitmap *avatarVar;
 
@@ -165,9 +172,17 @@ static void secondaryWindow3Unload(Window *window)
     text_layer_destroy(secondTextLayer);
 }
 
+// During initial data retrieval (while splash screen is active), if the user is unable to successfully fetch their profile data, they may click the SELECT button to make another retrieval attempt.
 void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-  //Window *window = (Window *)context; This statement section is currently useless.
+  if(window_stack_contains_window(window) && timer > 30)
+  {
+    firstAPICall = false;
+    
+    timer = 0;
+    
+    text_layer_set_text(textLayer2, "Re-fetching Data...");
+  }
 }
 
 // Provides data and things for button click events.
@@ -271,15 +286,12 @@ static void select_click_callback(MenuLayer *menuLayer, MenuIndex *cell_Index, v
 bool dataSuccess = false;
 
 // ...In particular, declare custom functions prior to use.
-static void initBT(void);
-static void init(void);
-static void deinit(void);
+//static void initBT(void);
+//static void init(void);
+//static void deinit(void);
 void bluetooth_Connection_Callback(bool connected);
 //BluetoothConnectionHandler bluetoothConnect;
 static void tick_handler(struct tm *tick_time, TimeUnits unitsChanged);
-
-// Use of unsigned short integer variable should be the most space-effective implementation for a micro-scale timer.
-unsigned short int timer = 0;
 
 // Receives messages from apiCode.js, takes JSON data and applies it to C variables.
 static void inbox_received_callback(DictionaryIterator *iterator, void *context)
@@ -384,16 +396,21 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   else
   {
     //Will be displayed if Steam's API fails to provide non-NULL user data. //DEV NOTE: HAVE YET TO GET THIS MESSAGE TO SHOW...///
-    if(timer<31)
+    if(timer < 31)
       timer++;
-    if(timer>=30)
+    if(timer >= 30)
       text_layer_set_text(textLayer2, "Steam API Unavailable!");
   }
 }
 
 static void outbox_sent_callback(DictionaryIterator *iterator, void *context)
 {
-  
+
+}
+
+static void splashScreenClickProvider(void *context)
+{
+  window_single_click_subscribe(BUTTON_ID_SELECT, down_single_click_handler);
 }
 
 // Layer for primary window.
@@ -403,6 +420,8 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context)
 static void init()
 {
   window = window_create();
+  
+  window_set_click_config_provider(window, splashScreenClickProvider);
   
   window_set_window_handlers(window, (WindowHandlers)
   {
@@ -420,11 +439,8 @@ static void init()
   app_message_register_inbox_received(inbox_received_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
   
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  app_message_open((uint32_t)256, (uint32_t)256);
 }
-
-bool currentState = false;
-bool firstAPICall = false;
 
 // Now that the first window has been set up, use window data to set up the two TextLayer strings that will be displayed on the "splash screen" of the app, dependant on conditions.
 static void initBT()
@@ -502,7 +518,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits unitsChanged)
     if(timer>=30)
     {
        text_layer_set_text(textLayer2, "COULD NOT RETRIEVE DATA!");
-       firstAPICall = false;
     }    
   }
 }
