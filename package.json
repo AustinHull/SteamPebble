@@ -1,0 +1,36 @@
+{
+    "author": "Hull Softworks (Austin Hull)",
+    "dependencies": {},
+    "keywords": [],
+    "name": "wrist-steam",
+    "pebble": {
+        "capabilities": [
+            "configurable"
+        ],
+        "displayName": "Wrist Steam",
+        "enableMultiJS": false,
+        "messageKeys": {
+            "KEY_AVATAR": 4,
+            "KEY_COUNTRY": 3,
+            "KEY_CURRENTNAME": 0,
+            "KEY_FRIENDNAME": 5,
+            "KEY_LISTSIZE": 6,
+            "KEY_REALNAME": 1,
+            "KEY_STATE": 2
+        },
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt"
+        ],
+        "uuid": "56e766c2-5f49-4aa4-9ba3-949d0ccf2b14",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "0.77.0"
+}

@@ -6,6 +6,8 @@ FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github
 // Core system/font libraries
 #include<pebble.h>
 #include<pebble_fonts.h>
+#include <stdlib.h>
+#include <string.h>
 #include "functionDeclarations.h"
 
 // Used for moving data between JavaScript (apiCode.js) and C (main.c)
@@ -13,46 +15,11 @@ FULL PROGRAMMING CODE OF THIS SOFTWARE MAY BE OBTAINED AT Github: https://github
 #define KEY_REALNAME 1
 #define KEY_STATE 2
 #define KEY_COUNTRY 3
-#define ID 4
-#define KEY_AVATAR 5
-  
-// Char buffers, used to contain parsed-through JSON variables, to be passed to the viewer.
-static char cName[33];
-static char rName[33];
-static char state[3];
-static char country[3];
-static char id[19];
+#define KEY_AVATAR 4
+#define KEY_FRIENDNAME 5
+#define KEY_LISTSIZE 6
 
-// Use of unsigned short integer variable should be the most space-effective implementation for a micro-scale timer.
-unsigned short int timer = 0;
-
-bool currentState = false;
-bool firstAPICall = false;
-
-//static GBitmap *avatarVar;
-
-// Used for the initial splash-screen.
-static Window *window;
-static TextLayer *textLayer;
-static TextLayer *textLayer2;
-
-// Window objects for the first menu screen.
-static Window *mainMenuWindow;
-//Layer *mainMenuWinLayer;
-MenuLayer *menuLayerMain;
-
-// Window objects for secondary menu screens.
-static Window *secondaryWindow;
-//Layer *secondaryLayer;
-MenuLayer *secondaryMenuLayer;
-
-static Window *secondaryWindow2;
-//Layer *secondaryLayer2;
-MenuLayer *secondaryMenuLayer2;
-
-static Window *secondaryWindow3;
-static TextLayer *secondTextLayer;
-ScrollLayer *scrollLayer;
+//static GBitmap *avatarVar; Use of Profile Avatars currently not in development...
 
 // .load function for splash screen WindowHandler. WORK IN PROGRESS!!!
 static void firstWindowLoad(Window *window)
@@ -142,6 +109,36 @@ static void secondaryWindow2Unload(Window *window)
     //secondaryMenuLayer2 = NULL;
 }
 
+static void secondaryWindow2_1Load(Window *window)
+{
+    window_set_background_color(window, GColorBlack);
+  
+    Layer *secondaryLayer3 = window_get_root_layer(window);
+    GRect bounds = layer_get_frame(secondaryLayer3);
+    GRect rect;
+    rect.origin = (GPoint){0,0};
+    rect.size.w = bounds.size.w;
+    rect.size.h = bounds.size.h;
+    guideTextLayer = text_layer_create(rect);
+    guideScrollLayer = scroll_layer_create(bounds);// Work In Progress!
+  
+    text_layer_set_text(guideTextLayer, "Guides coming soon!"); // TODO: Finish setting up this Guide Page text!
+    text_layer_set_font(guideTextLayer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+    text_layer_set_size(guideTextLayer, GSize(rect.size.w, 2000));
+    GSize sTextLayerSize = text_layer_get_content_size(guideTextLayer);// Work In Progress!
+    scroll_layer_set_content_size(guideScrollLayer, GSize(rect.size.w, sTextLayerSize.h));// Work In Progress! GET SCROLLING TO WORK!
+    scroll_layer_add_child(guideScrollLayer, text_layer_get_layer(guideTextLayer));// Work In Progress!
+    layer_add_child(window_get_root_layer(window), scroll_layer_get_layer(guideScrollLayer));// Work In Progress!
+    text_layer_set_background_color(guideTextLayer, GColorBlack);
+    text_layer_set_text_color(guideTextLayer, GColorWhite);
+    scroll_layer_set_click_config_onto_window(guideScrollLayer, window);// Work In Progress!  
+}
+static void secondaryWindow2_1Unload(Window *window)
+{
+    scroll_layer_destroy(guideScrollLayer);
+    text_layer_destroy(guideTextLayer);
+}
+
 // .load function for About Page WindowHandler. WORK IN PROGRESS!!!
 static void secondaryWindow3Load(Window *window)
 {
@@ -172,6 +169,18 @@ static void secondaryWindow3Unload(Window *window)
     text_layer_destroy(secondTextLayer);
 }
 
+static void friendsListWindowLoad(Window *window)
+{
+    window_set_background_color(window, GColorWhite);
+  
+    menu_layer_set_click_config_onto_window(friendsListMenuLayer, window);
+    layer_add_child(window_get_root_layer(window), menu_layer_get_layer(friendsListMenuLayer));
+}
+static void friendsListWindowUnload(Window *window)
+{
+  
+}
+
 // During initial data retrieval (while splash screen is active), if the user is unable to successfully fetch their profile data, they may click the SELECT button to make another retrieval attempt.
 void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
@@ -194,7 +203,7 @@ void config_provider(Window *window)
 // Callbacks for first(Main Menu) window.
 uint16_t num_rows_callback(MenuLayer *menuLayer, uint16_t sectionIndex, void *callbackContext)
 {
-  return 3;
+  return 4;
 }
 
 void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *callback_context)
@@ -204,10 +213,16 @@ void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, 
     case 0:
     menu_cell_basic_draw(ctx, cell_layer, "Profile Info", NULL, NULL);
     break;
+    
     case 1:
+    menu_cell_basic_draw(ctx, cell_layer, "Friends List", NULL, NULL);
+    break;
+    
+    case 2:
     menu_cell_basic_draw(ctx, cell_layer, "User Guide", NULL, NULL);
     break;
-    case 2:
+    
+    case 3:
     menu_cell_basic_draw(ctx, cell_layer, "About", NULL, NULL);
     break;
   }
@@ -226,12 +241,15 @@ void draw_row_callback2(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index,
     case 0:
     menu_cell_basic_draw(ctx, cell_layer, cName, NULL, NULL);
     break;
+    
     case 1:
     menu_cell_basic_draw(ctx, cell_layer, rName, NULL, NULL);
     break;
+    
     case 2:
     menu_cell_basic_draw(ctx, cell_layer, state, NULL, NULL);
     break;
+    
     case 3:
     menu_cell_basic_draw(ctx, cell_layer, country, NULL, NULL);
     break;
@@ -257,6 +275,73 @@ void draw_row_callback2_1(GContext *ctx, Layer *cell_layer, MenuIndex *cell_inde
   }
 }
 
+uint16_t num_rows_callback_FriendsList(MenuLayer *menuLayer, uint16_t sectionIndex, void *callbackContext)
+{
+  return (KEY_LISTSIZE - 1);  
+}
+
+// Very basic friends list display protocol. Only displays a static list of 5 friends at this time.
+void draw_row_callback_FriendsList(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *callback_context)
+{
+  
+  char* textParse = malloc(sizeof(friendsList));
+  char* splitString = malloc(200);
+  
+  char* name1 = malloc(33);
+  char* name2 = malloc(33);
+  char* name3 = malloc(33);
+  char* name4 = malloc(33);
+  char* name5 = malloc(33);
+  
+  strcpy(textParse, friendsList);
+  
+  splitString = strtok(textParse, "|");
+  
+  name1 = splitString;
+  splitString = strtok(NULL, "|");
+  name2 = splitString;
+  splitString = strtok(NULL, "|");
+  name3 = splitString;
+  splitString = strtok(NULL, "|");
+  name4 = splitString;
+  splitString = strtok(NULL, "|");
+  name5 = splitString;
+  //splitString = strtok(NULL, "|");
+  
+  //cell_index->row = 0;
+   
+  // Friends list should be parsed before further processing...
+  switch(cell_index->row)
+  {
+    case 0:
+    menu_cell_basic_draw(ctx, cell_layer, name1, NULL, NULL);
+    //splitString = strtok(NULL, "|");
+    break;
+    case 1:
+    menu_cell_basic_draw(ctx, cell_layer, name2, NULL, NULL);
+    //splitString = strtok(NULL, "|");
+    break;
+    case 2:
+    menu_cell_basic_draw(ctx, cell_layer, name3, NULL, NULL);
+    //splitString = strtok(NULL, "|");
+    break;
+    case 3:
+    menu_cell_basic_draw(ctx, cell_layer, name4, NULL, NULL);
+    //splitString = strtok(NULL, "|");
+    break;
+    case 4:
+    menu_cell_basic_draw(ctx, cell_layer, name5, NULL, NULL);
+    //splitString = strtok(NULL, "|");
+    break;
+
+    //cell_index->row++;
+  }
+  
+  //menu_layer_reload_data(friendsListMenuLayer);
+  
+  free(textParse);
+}
+
 //Used to transition selections from main menu to secondary menu.
 static void select_click_callback(MenuLayer *menuLayer, MenuIndex *cell_Index, void *callbackContext)
 {
@@ -266,18 +351,38 @@ static void select_click_callback(MenuLayer *menuLayer, MenuIndex *cell_Index, v
     case 0:
     // Case 0 is used to display profile data on the secondaryWindow.
     window_stack_push(secondaryWindow, true);
-    
-    //menu_layer_set_click_config_onto_window(secondaryMenuLayer, secondaryWindow);
-    //layer_add_child(window_get_root_layer(secondaryWindow), menu_layer_get_layer(secondaryMenuLayer));
     break;
     case 1:
+    // Case 1 is used to display the user's friends list.
+    window_stack_push(friendsListWindow, true);
+    break;
+    case 2:
+    // Case 2 is used to display Guides and other instructions to the user.
     window_stack_push(secondaryWindow2, true);
     
     menu_layer_set_click_config_onto_window(secondaryMenuLayer2, secondaryWindow2);
     layer_add_child(window_get_root_layer(secondaryWindow2), menu_layer_get_layer(secondaryMenuLayer2));
     break;
-    case 2:
+    case 3:
+    // Case 3 is used to display About information to the user.
     window_stack_push(secondaryWindow3, true);    
+    break;
+  }
+}
+
+//Used to transition selections from guideWindow(secondaryWindow) to secondaryWindow2_1.
+static void select_click_callbackGuide(MenuLayer *menuLayer, MenuIndex *cell_Index, void *callbackContext)
+{
+  switch(cell_Index->row)
+  {
+    // Each case's output corresponds to a single menu selection, depending on which menu row is selected at the time of button-press.
+    case 0:
+    // Case 0 is used to display profile data on the secondaryWindow.
+    window_stack_push(secondaryWindow2_1, true);
+    break;
+    case 1:
+    // Case 1 is used to display Guides and other instructions to the user.
+    window_stack_push(secondaryWindow2_1, true);
     break;
   }
 }
@@ -285,21 +390,13 @@ static void select_click_callback(MenuLayer *menuLayer, MenuIndex *cell_Index, v
 // Set up some initialization-related variables and objects.
 bool dataSuccess = false;
 
-// ...In particular, declare custom functions prior to use.
-//static void initBT(void);
-//static void init(void);
-//static void deinit(void);
-void bluetooth_Connection_Callback(bool connected);
-//BluetoothConnectionHandler bluetoothConnect;
-static void tick_handler(struct tm *tick_time, TimeUnits unitsChanged);
-
 // Receives messages from apiCode.js, takes JSON data and applies it to C variables.
 static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 {
   
-  Tuple *t = dict_read_first(iterator);
+  Tuple *t = dict_read_first(iterator); // Set the Tuple pointer towards the address of the iterator's beginning point.
   
-  while(t != NULL)
+  while(t != NULL) // Keep interpreting data within the Tuple pointer so long as it's not empty.
   {
     switch(t->key)
     {
@@ -315,15 +412,21 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       case KEY_COUNTRY:
       snprintf(country, sizeof(country), "%s", t->value->cstring);
       break;
-      case ID:
+      case KEY_AVATAR:
       snprintf(id, sizeof(id), "%s", t->value->cstring);
+      break;
+      case KEY_FRIENDNAME:
+      snprintf(friendsList, sizeof(friendsList), "%s", t->value->cstring);
+      break;
+      case KEY_LISTSIZE:
+      listSize = (t->value->int32);
       break;
       default:
       APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
       break;
     }
     
-    t = dict_read_next(iterator);
+    t = dict_read_next(iterator); // Increment the iterator.
   }
   
   // Loads next windows, only if data is received from Steam.
@@ -354,7 +457,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     
     window_stack_remove(window, false);
     
-    //Secondary windows and their parameters. These do not get pushed to screen until transition. Also, creates and attaches secondary menu layer to secondary window. //IN PROGRESS!!!//
+    /*
+      Secondary windows and their parameters. These do not get pushed to screen until transition. 
+      Also, creates and attaches secondary menu layer to secondary window. IN PROGRESS!!!
+    */
     secondaryWindow = window_create();
     
     window_set_window_handlers(secondaryWindow, (WindowHandlers)
@@ -362,12 +468,25 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         .load = secondaryWindowLoad,
         .unload = secondaryWindowUnload
     });
-    //secondaryLayer = window_get_root_layer(secondaryWindow);
-    //window_set_background_color(secondaryWindow, GColorWhite);
+    
     secondaryMenuLayer = menu_layer_create(GRect(0, 0, 144, 168));
     MenuLayerCallbacks callbacks2 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2, NULL};
     menu_layer_set_callbacks(secondaryMenuLayer, NULL, callbacks2);
     
+    // Used to display Friends List.
+    friendsListWindow = window_create();
+    
+    window_set_window_handlers(friendsListWindow, (WindowHandlers)
+    {
+         .load = friendsListWindowLoad,
+         .unload = friendsListWindowUnload
+    });
+    
+    friendsListMenuLayer = menu_layer_create(GRect(0, 0, 144, 168));
+    MenuLayerCallbacks callbacksFriendsList = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback_FriendsList, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback_FriendsList, NULL};
+    menu_layer_set_callbacks(friendsListMenuLayer, NULL, callbacksFriendsList);
+    
+    // Used to display Guide Menu.
     secondaryWindow2 = window_create();
     
     window_set_window_handlers(secondaryWindow2, (WindowHandlers)
@@ -378,9 +497,21 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     
     //secondaryLayer2 = window_get_root_layer(secondaryWindow2);
     secondaryMenuLayer2 = menu_layer_create(GRect(0, 0, 144, 168));
-    MenuLayerCallbacks callbacks2_1 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2_1, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2_1, NULL};
+    MenuLayerCallbacks callbacks2_1 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2_1, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2_1, .select_click = (MenuLayerSelectCallback)select_click_callbackGuide};
     menu_layer_set_callbacks(secondaryMenuLayer2, NULL, callbacks2_1);
+    menu_layer_set_click_config_onto_window(secondaryMenuLayer2, secondaryWindow2);
+    layer_add_child(window_get_root_layer(secondaryWindow2), menu_layer_get_layer(secondaryMenuLayer2));
     
+    //Place stuff for secondaryWindow2_1 somewhere over here...
+    secondaryWindow2_1 = window_create();
+    
+    window_set_window_handlers(secondaryWindow2_1, (WindowHandlers)
+    {
+        .load = secondaryWindow2_1Load,
+        .unload = secondaryWindow2_1Unload
+    });
+    
+    // Used to display About screen.
     secondaryWindow3 = window_create();
     
     window_set_window_handlers(secondaryWindow3, (WindowHandlers)
@@ -388,10 +519,6 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
          .load = secondaryWindow3Load,
          .unload = secondaryWindow3Unload
     });
-    
-    //secondaryLayer3 = window_get_root_layer(secondaryWindow3);
-    //MenuLayerCallbacks callbacks2_2 = {.draw_row = (MenuLayerDrawRowCallback)draw_row_callback2_2, .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)num_rows_callback2_2, NULL};
-    //menu_layer_set_callbacks(secondaryMenuLayer3, NULL, callbacks2_2);
   }
   else
   {
@@ -408,6 +535,7 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context)
 
 }
 
+// Used to register user's refresh attempts, if data was not retrieved during splashscreen's initialization.
 static void splashScreenClickProvider(void *context)
 {
   window_single_click_subscribe(BUTTON_ID_SELECT, down_single_click_handler);
@@ -439,7 +567,7 @@ static void init()
   app_message_register_inbox_received(inbox_received_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
   
-  app_message_open((uint32_t)256, (uint32_t)256);
+  app_message_open((uint32_t)1024, (uint32_t)1024);
 }
 
 // Now that the first window has been set up, use window data to set up the two TextLayer strings that will be displayed on the "splash screen" of the app, dependant on conditions.
@@ -534,19 +662,23 @@ void deinit()
   window_destroy(mainMenuWindow);
   window_destroy(secondaryWindow);
   window_destroy(secondaryWindow2);
+  window_destroy(secondaryWindow2_1);
   window_destroy(secondaryWindow3);
+  window_destroy(friendsListWindow);
   window = NULL;
   mainMenuWindow = NULL;
   secondaryWindow = NULL;
   secondaryWindow2 = NULL;
+  secondaryWindow2_1 = NULL;
   secondaryWindow3 = NULL;
+  friendsListWindow = NULL;
   
-  //menu_layer_destroy(menuLayerMain);
   menu_layer_destroy(secondaryMenuLayer);
   menu_layer_destroy(secondaryMenuLayer2);
-  //menuLayerMain = NULL;
+  menu_layer_destroy(friendsListMenuLayer);
   secondaryMenuLayer = NULL;
   secondaryMenuLayer2 = NULL;
+  friendsListMenuLayer = NULL;
   
   app_message_deregister_callbacks();
 }
