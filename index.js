@@ -1,3 +1,7 @@
+/* 
+** Portions of code borrowed and retooled from the "Steam Strategy for Passport" 
+** project, available at https://www.github.com/liamcurry/passport-steam. Note that said project falls under the MIT License.
+*/
 var http = require("http");
 var fs = require("fs");
 var express = require("express");
@@ -6,7 +10,7 @@ var session = require("express-session");
 var firebase = require("connect-firebase")(session);
 var firebaseOptions = {};
 var passport = require('passport'), OpenIDStrategy = require('passport-steam').Strategy;
-// Portions of code borrowed and retooled from the "Steam Strategy for Passport" project, available at https://www.github.com/liamcurry/passport-steam. Note that said project falls under the MIT License.
+
 passport.use(new OpenIDStrategy({
     returnURL: 'http://steam.planeboygames.com:26648/auth/steam/return',
     realm: 'http://steam.planeboygames.com:26648/',
