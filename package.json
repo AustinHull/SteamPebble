@@ -16,7 +16,8 @@
             "KEY_FRIENDNAME": 5,
             "KEY_LISTSIZE": 6,
             "KEY_REALNAME": 1,
-            "KEY_STATE": 2
+            "KEY_STATE": 2,
+            "PEBBLE_MENU_ICON": 7
         },
         "projectType": "native",
         "resources": {
