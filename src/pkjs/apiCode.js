@@ -23,11 +23,11 @@ var xhrRequest = function(url, type, callback)
 
   if(callIdentifier === 0)
   {
-    xhr.open(type, "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002?key=A89AB1A31BB73310B4C13D3945B79954&" + "steamids=" + url, false);
+    xhr.open(type, "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002?key=BE21C3BE3D080E95DE1D946923C6D99C&" + "steamids=" + url, false);
   }
   else if(callIdentifier === 1)
   {
-    xhr.open(type, "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=A89AB1A31BB73310B4C13D3945B79954&" + "steamid=" + url + "&relationship=friend", false);
+    xhr.open(type, "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=BE21C3BE3D080E95DE1D946923C6D99C&" + "steamid=" + url + "&relationship=friend", false);
   }
 
   xhr.setRequestHeader('Content-Type:', 'application/x-www-form-urlencoded');
