@@ -1,4 +1,6 @@
 # Wrist Steam
+NOTE: AS OF JANUARY 2019, ANY AND ALL SUPPORT FOR STEAMPEBBLE IS DISCONTINUED DUE TO THE PEBBLE LINE OF HARDWARE BEING DISCONTINUED. ANY INTERESTED DEVELOPERS ARE STILL FREE TO FORK AND WORK WITH MY EXISTING PROJECT CONTRIBUTIONS AT THEIR LEISURE!
+
 Hull Softworks'(Austin Hull's) open-source Pebble application is intended to - at least to a certain degree - bridge the gap between Steam users and their Pebble smart watches! 
 
 Note: License details are currently present in all code files of this project, but may still be added to this readme later.
